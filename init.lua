@@ -2,18 +2,19 @@
 -- register potions
 
 local potion_list = {
-	{"1", },
-	{"2", },
-	{"3", },
-	{"4", },
-	{"5", },
-	{"6", },
-	{"7", },
-	{"8", }
+	{"1", "group:leaves"},
+	{"2", "default:coal_lump"},
+	{"3", "group:flower"},
+	{"4", "default:copper_lump"},
+	{"5", "default:cactus"},
+	{"6", "default:mese_crystal"},
+	{"7", "default:diamond"},
+	{"8", "default:obsidian"}
 }
 
 for i in ipairs(potion_list) do
 	local number = potion_list[i][1]
+	local ingredient = potion_list[i][2]
 
 	minetest.register_node("warp_potions:potion_"..number, {
 		description = "Warp Potion "..number,
@@ -27,6 +28,14 @@ for i in ipairs(potion_list) do
 		paramtype = "light",
 		groups = {oddly_breakable_by_hand = 3, attached_node = 1},
 		walkable = false,
+	})
 
+	minetest.register_craft({
+		output = "warp_potions:potion_"..number.." 1",
+		recipe = {
+			{ingredient, "", ingredient},
+			{"", "vessels:glass_bottle", ""},
+			{ingredient, "", ingredient}
+		}
 	})
 end
