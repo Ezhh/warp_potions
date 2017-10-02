@@ -46,6 +46,25 @@ for i in ipairs(potion_list) do
 end
 
 
+-- warp function
+
+local function warp(player, warp_point)
+	if minetest.string_to_pos(player:get_attribute("warp_point_"..warp_point)) == nil then
+		minetest.chat_send_player(player:get_player_name(),"Invalid or un-set warp point.") 
+		return
+	end
+
+	local inv = player:get_inventory()
+	if not inv:contains_item("potion_inv", ItemStack("warp_potions:potion_"..warp_point.." 1")) then
+		minetest.chat_send_player(player:get_player_name(),"You don't have the right potion!")
+		return
+	end
+
+	inv:remove_item("potion_inv", ItemStack("warp_potions:potion_"..warp_point.." 1"))
+	player:set_pos(minetest.string_to_pos(player:get_attribute("warp_point_"..warp_point)))
+end
+
+
 -- warp command
 
 minetest.register_chatcommand("warp", {
@@ -68,3 +87,65 @@ minetest.register_chatcommand("warp", {
 		player:set_pos(minetest.string_to_pos(player:get_attribute("warp_point_"..warp_point)))
 	end
 })
+
+
+-- on join check for inv
+
+minetest.register_on_joinplayer(function(player)
+	local inv = player:get_inventory()
+	if inv:get_size("potion_inv") == 0 then
+		inv:set_size("potion_inv", 8)
+	end
+end)
+
+
+-- test command, remove later
+
+minetest.register_chatcommand("fs", { 
+	func = function(player_name, param)
+		local player = minetest.get_player_by_name(player_name)
+		local inv = player:get_inventory()
+		minetest.show_formspec(player_name, "warp_potions:potions_form",
+			"size[8,10]" ..
+
+			-- inventory slots
+			"label[0,0;Potion Inventory:]" ..
+
+			"list[current_player;potion_inv;1,1;1,1;0]" ..
+			"list[current_player;potion_inv;3,1;1,1;1]" ..
+			"list[current_player;potion_inv;5,1;1,1;2]" ..
+			"list[current_player;potion_inv;7,1;1,1;3]" ..
+
+			"list[current_player;potion_inv;1,2.5;1,1;4]" ..
+			"list[current_player;potion_inv;3,2.5;1,1;5]" ..
+			"list[current_player;potion_inv;5,2.5;1,1;6]" ..
+			"list[current_player;potion_inv;7,2.5;1,1;7]" ..
+
+			-- buttons
+			"button[0.2,1;1,1;1;Use]" ..
+			"button[2.2,1;1,1;3;Use]" ..
+			"button[4.2,1;1,1;5;Use]" ..
+			"button[6.2,1;1,1;7;Use]" ..
+
+			"button[0.2,2.5;1,1;2;Use]" ..
+			"button[2.2,2.5;1,1;4;Use]" ..
+			"button[4.2,2.5;1,1;6;Use]" ..
+			"button[6.2,2.5;1,1;8;Use]" ..
+
+			"list[current_player;main;0,5;8,4;]")
+	end
+})
+
+
+-- when pressing buttons
+
+minetest.register_on_player_receive_fields(function(player, formname, fields)
+	if formname ~= "warp_potions:potions_form" then
+		return
+	end
+	for i = 1, 8 do
+		if fields[tostring(i)] then
+			warp(player, tostring(i))
+		end
+	end	
+end)
