@@ -54,13 +54,13 @@ local function warp(player, warp_point)
 		return
 	end
 
-	local inv = player:get_inventory()
-	if not inv:contains_item("potion_inv", ItemStack("warp_potions:potion_"..warp_point.." 1")) then
+	local inv = minetest.get_inventory({type='detached', name=player:get_player_name().."_potion_inv"})
+	if not inv:contains_item("potions", ItemStack("warp_potions:potion_"..warp_point.." 1")) then
 		minetest.chat_send_player(player:get_player_name(),"You don't have the right potion!")
 		return
 	end
 
-	inv:remove_item("potion_inv", ItemStack("warp_potions:potion_"..warp_point.." 1"))
+	inv:remove_item("potions", ItemStack("warp_potions:potion_"..warp_point.." 1"))
 	player:set_pos(minetest.string_to_pos(player:get_attribute("warp_point_"..warp_point)))
 end
 
@@ -93,8 +93,23 @@ minetest.register_chatcommand("warp", {
 
 minetest.register_on_joinplayer(function(player)
 	local inv = player:get_inventory()
-	if inv:get_size("potion_inv") == 0 then
-		inv:set_size("potion_inv", 8)
+	local potion_inv = minetest.create_detached_inventory(player:get_player_name().."_potion_inv",{
+		on_put = function(inv, listname, index, stack, player)
+			player:get_inventory():set_stack(listname, index, stack)
+		end
+	}, player:get_player_name())
+	local i_list = inv:get_lists()
+	local p_list = potion_inv:get_lists()
+	if p_list.potions == nil then
+		-- create
+		potion_inv:set_size("potions", 4*2)
+	end
+	if i_list.potions == nil then
+		-- create
+		inv:set_size("potions", potion_inv:get_size("potions"))
+	else
+		-- copy
+		potion_inv:set_list("potions", inv:get_list("potions"))
 	end
 end)
 
@@ -111,15 +126,15 @@ minetest.register_chatcommand("fs", {
 			-- inventory slots
 			"label[0,0;Potion Inventory:]" ..
 
-			"list[current_player;potion_inv;1,1;1,1;0]" ..
-			"list[current_player;potion_inv;3,1;1,1;1]" ..
-			"list[current_player;potion_inv;5,1;1,1;2]" ..
-			"list[current_player;potion_inv;7,1;1,1;3]" ..
+			"list[detached:"..player:get_player_name().."_potion_inv;potions;1,1;1,1;0]" ..
+			"list[detached:"..player:get_player_name().."_potion_inv;potions;3,1;1,1;1]" ..
+			"list[detached:"..player:get_player_name().."_potion_inv;potions;5,1;1,1;2]" ..
+			"list[detached:"..player:get_player_name().."_potion_inv;potions;7,1;1,1;3]" ..
 
-			"list[current_player;potion_inv;1,2.5;1,1;4]" ..
-			"list[current_player;potion_inv;3,2.5;1,1;5]" ..
-			"list[current_player;potion_inv;5,2.5;1,1;6]" ..
-			"list[current_player;potion_inv;7,2.5;1,1;7]" ..
+			"list[detached:"..player:get_player_name().."_potion_inv;potions;1,2.5;1,1;4]" ..
+			"list[detached:"..player:get_player_name().."_potion_inv;potions;3,2.5;1,1;5]" ..
+			"list[detached:"..player:get_player_name().."_potion_inv;potions;5,2.5;1,1;6]" ..
+			"list[detached:"..player:get_player_name().."_potion_inv;potions;7,2.5;1,1;7]" ..
 
 			-- buttons
 			"button[0.2,1;1,1;1;Use]" ..
@@ -131,6 +146,12 @@ minetest.register_chatcommand("fs", {
 			"button[2.2,2.5;1,1;4;Use]" ..
 			"button[4.2,2.5;1,1;6;Use]" ..
 			"button[6.2,2.5;1,1;8;Use]" ..
+
+			-- background
+			--"background[0,0;8,10;bg_main.png]" ..
+			--"background[0.2,1;1.8,1;bg_slots.png]" ..
+
+			--"button_exit[0,3.5;1,1;exit;Close]")
 
 			"list[current_player;main;0,5;8,4;]")
 	end
