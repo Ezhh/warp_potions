@@ -12,6 +12,9 @@ local potion_list = {
 	{"8", "default:obsidian"}
 }
 
+local m_ip = minetest.get_modpath('inventory_plus')
+local m_ui = minetest.get_modpath('unified_inventory')
+
 for i in ipairs(potion_list) do
 	local number = potion_list[i][1]
 	local ingredient = potion_list[i][2]
@@ -66,6 +69,7 @@ end
 
 
 -- inventory sort function
+
 local function potion_inv_sort(player)
 	local name = player:get_player_name()
 	local p_inv = player:get_inventory()
@@ -87,6 +91,46 @@ local function potion_inv_sort(player)
 		end
 	end
 	p_inv:set_list("potions", w_inv:get_list("potions")) -- shadow changes
+end
+
+
+-- formspec function
+
+local function get_formspec(name)
+	local formspec = 'size[8,9;]'
+	formspec = formspec..
+			-- inventory slots
+			"label[0,0;Potion Inventory:]" ..
+
+			"list[detached:"..name.."_potion_inv;potions;1,1;1,1;0]" ..
+			"list[detached:"..name.."_potion_inv;potions;3,1;1,1;2]" ..
+			"list[detached:"..name.."_potion_inv;potions;5,1;1,1;4]" ..
+			"list[detached:"..name.."_potion_inv;potions;7,1;1,1;6]" ..
+
+			"list[detached:"..name.."_potion_inv;potions;1,2.5;1,1;1]" ..
+			"list[detached:"..name.."_potion_inv;potions;3,2.5;1,1;3]" ..
+			"list[detached:"..name.."_potion_inv;potions;5,2.5;1,1;5]" ..
+			"list[detached:"..name.."_potion_inv;potions;7,2.5;1,1;7]" ..
+
+			-- buttons
+			"button[0.2,1;1,1;1;Use]" ..
+			"button[2.2,1;1,1;3;Use]" ..
+			"button[4.2,1;1,1;5;Use]" ..
+			"button[6.2,1;1,1;7;Use]" ..
+
+			"button[0.2,2.5;1,1;2;Use]" ..
+			"button[2.2,2.5;1,1;4;Use]" ..
+			"button[4.2,2.5;1,1;6;Use]" ..
+			"button[6.2,2.5;1,1;8;Use]" ..
+
+			-- background
+			--"background[0,0;8,10;bg_main.png]" ..
+			--"background[0.2,1;1.8,1;bg_slots.png]" ..
+
+			--"button_exit[0,3.5;1,1;exit;Close]")
+
+			"list[current_player;main;0,5;8,4;]"
+	return formspec
 end
 
 
@@ -114,14 +158,15 @@ minetest.register_chatcommand("warp", {
 })
 
 
--- on join check for inv
+-- on join event
 
 minetest.register_on_joinplayer(function(player)
 	local inv = player:get_inventory()
 	local name = player:get_player_name()
+	-- create inventory
 	local potion_inv = minetest.create_detached_inventory(name.."_potion_inv",{
 		allow_move = function(inv, from_list, from_index, to_list, to_index, count, player)
-			return 0 -- refuse
+			return 0
 		end,
 		allow_put = function(inv, listname, index, stack, player)
 			if string.find(stack:get_name(), "warp_potion") == nil then return 0 end
@@ -135,18 +180,21 @@ minetest.register_on_joinplayer(function(player)
 			minetest.after(0, potion_inv_sort, player)
 		end
 	}, player:get_player_name())
-	-- initialise potion inventory
+	-- initialise inventory
 	local i_list = inv:get_lists()
 	local p_list = potion_inv:get_lists()
 	if p_list.potions == nil then
-		-- create
 		potion_inv:set_size("potions", 4*2)
 	end
-	-- initialise shadow copy
+	-- initialise copy
 	if i_list.potions == nil then
 		inv:set_size("potions", 4*2)
 	else
 		potion_inv:set_list("potions", inv:get_list("potions"))
+	end
+	-- inventory plus?
+	if m_ip then
+		inventory_plus.register_button(player, "warp_potion", "Warp Potions")
 	end
 end)
 
@@ -157,40 +205,8 @@ minetest.register_chatcommand("fs", {
 	func = function(player_name, param)
 		local player = minetest.get_player_by_name(player_name)
 		local inv = player:get_inventory()
-		minetest.show_formspec(player_name, "warp_potions:potions_form",
-			"size[8,10]" ..
-
-			-- inventory slots
-			"label[0,0;Potion Inventory:]" ..
-
-			"list[detached:"..player:get_player_name().."_potion_inv;potions;1,1;1,1;0]" ..
-			"list[detached:"..player:get_player_name().."_potion_inv;potions;3,1;1,1;2]" ..
-			"list[detached:"..player:get_player_name().."_potion_inv;potions;5,1;1,1;4]" ..
-			"list[detached:"..player:get_player_name().."_potion_inv;potions;7,1;1,1;6]" ..
-
-			"list[detached:"..player:get_player_name().."_potion_inv;potions;1,2.5;1,1;1]" ..
-			"list[detached:"..player:get_player_name().."_potion_inv;potions;3,2.5;1,1;3]" ..
-			"list[detached:"..player:get_player_name().."_potion_inv;potions;5,2.5;1,1;5]" ..
-			"list[detached:"..player:get_player_name().."_potion_inv;potions;7,2.5;1,1;7]" ..
-
-			-- buttons
-			"button[0.2,1;1,1;1;Use]" ..
-			"button[2.2,1;1,1;3;Use]" ..
-			"button[4.2,1;1,1;5;Use]" ..
-			"button[6.2,1;1,1;7;Use]" ..
-
-			"button[0.2,2.5;1,1;2;Use]" ..
-			"button[2.2,2.5;1,1;4;Use]" ..
-			"button[4.2,2.5;1,1;6;Use]" ..
-			"button[6.2,2.5;1,1;8;Use]" ..
-
-			-- background
-			--"background[0,0;8,10;bg_main.png]" ..
-			--"background[0.2,1;1.8,1;bg_slots.png]" ..
-
-			--"button_exit[0,3.5;1,1;exit;Close]")
-
-			"list[current_player;main;0,5;8,4;]")
+		minetest.show_formspec(player_name,
+		"warp_potions:potions_form", get_formspec(player_name))
 	end
 })
 
@@ -198,6 +214,16 @@ minetest.register_chatcommand("fs", {
 -- when pressing buttons
 
 minetest.register_on_player_receive_fields(function(player, formname, fields)
+	if m_ip then
+		if fields.warp_potion then
+			-- show formspec
+			local player_name = player:get_player_name()
+			minetest.show_formspec(player_name,
+			"warp_potions:potions_form",
+			get_formspec(player_name))
+			return
+		end
+	end
 	if formname ~= "warp_potions:potions_form" then
 		return
 	end
@@ -207,3 +233,18 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 		end
 	end
 end)
+
+-- unified inventory button
+
+if m_ui then
+	unified_inventory.register_button('potions', {
+		type = 'image',
+		image = 'warp_potion_3.png',
+		tooltip = 'Warp Potion Inventory',
+		action = function(player)
+		local player_name = player:get_player_name()
+		minetest.show_formspec(player_name,
+		"warp_potions:potions_form", get_formspec(player_name))
+	end,
+})
+end
