@@ -50,7 +50,7 @@ end
 
 local function warp(player, warp_point)
 	if minetest.string_to_pos(player:get_attribute("warp_point_"..warp_point)) == nil then
-		minetest.chat_send_player(player:get_player_name(),"Invalid or un-set warp point.") 
+		minetest.chat_send_player(player:get_player_name(),"Invalid or un-set warp point.")
 		return
 	end
 
@@ -65,6 +65,31 @@ local function warp(player, warp_point)
 end
 
 
+-- inventory sort function
+local function potion_inv_sort(player)
+	local name = player:get_player_name()
+	local p_inv = player:get_inventory()
+	local w_inv = minetest.get_inventory({type="detached", name=name.."_potion_inv"})
+	-- sort according to slot, returning any leftover. Stack max is 99
+	for i=1,8 do
+		-- check stack is in correct slot!
+		local stack = w_inv:get_stack("potions", i)
+		if not stack:is_empty() then -- catch error
+			local index = tonumber(string.match(stack:get_name(),"%d"))
+			if i ~= index then
+				-- wrong slot, fix it!
+				local dest = w_inv:get_stack("potions", index)
+				local leftover = dest:add_item(stack)
+				w_inv:set_stack("potions", i, {})
+				w_inv:set_stack("potions", index, dest)
+				p_inv:add_item("main", leftover)
+			end
+		end
+	end
+	p_inv:set_list("potions", w_inv:get_list("potions")) -- shadow changes
+end
+
+
 -- warp command
 
 minetest.register_chatcommand("warp", {
@@ -73,7 +98,7 @@ minetest.register_chatcommand("warp", {
 	func = function(player_name, warp_point)
 		local player = minetest.get_player_by_name(player_name)
 		if minetest.string_to_pos(player:get_attribute("warp_point_"..warp_point)) == nil then
-			minetest.chat_send_player(player_name,"Invalid or un-set warp point.") 
+			minetest.chat_send_player(player_name,"Invalid or un-set warp point.")
 			return
 		end
 
@@ -93,22 +118,34 @@ minetest.register_chatcommand("warp", {
 
 minetest.register_on_joinplayer(function(player)
 	local inv = player:get_inventory()
-	local potion_inv = minetest.create_detached_inventory(player:get_player_name().."_potion_inv",{
+	local name = player:get_player_name()
+	local potion_inv = minetest.create_detached_inventory(name.."_potion_inv",{
+		allow_move = function(inv, from_list, from_index, to_list, to_index, count, player)
+			return 0 -- refuse
+		end,
+		allow_put = function(inv, listname, index, stack, player)
+			if string.find(stack:get_name(), "warp_potion") == nil then return 0 end
+			return 99
+		end,
+		on_take = function(inv, listname, index, stack, player)
+			local p_inv = player:get_inventory()
+			p_inv:set_list("potions", inv:get_list("potions")) -- record state
+		end,
 		on_put = function(inv, listname, index, stack, player)
-			player:get_inventory():set_stack(listname, index, stack)
+			minetest.after(0, potion_inv_sort, player)
 		end
 	}, player:get_player_name())
+	-- initialise potion inventory
 	local i_list = inv:get_lists()
 	local p_list = potion_inv:get_lists()
 	if p_list.potions == nil then
 		-- create
 		potion_inv:set_size("potions", 4*2)
 	end
+	-- initialise shadow copy
 	if i_list.potions == nil then
-		-- create
-		inv:set_size("potions", potion_inv:get_size("potions"))
+		inv:set_size("potions", 4*2)
 	else
-		-- copy
 		potion_inv:set_list("potions", inv:get_list("potions"))
 	end
 end)
@@ -116,7 +153,7 @@ end)
 
 -- test command, remove later
 
-minetest.register_chatcommand("fs", { 
+minetest.register_chatcommand("fs", {
 	func = function(player_name, param)
 		local player = minetest.get_player_by_name(player_name)
 		local inv = player:get_inventory()
@@ -127,13 +164,13 @@ minetest.register_chatcommand("fs", {
 			"label[0,0;Potion Inventory:]" ..
 
 			"list[detached:"..player:get_player_name().."_potion_inv;potions;1,1;1,1;0]" ..
-			"list[detached:"..player:get_player_name().."_potion_inv;potions;3,1;1,1;1]" ..
-			"list[detached:"..player:get_player_name().."_potion_inv;potions;5,1;1,1;2]" ..
-			"list[detached:"..player:get_player_name().."_potion_inv;potions;7,1;1,1;3]" ..
+			"list[detached:"..player:get_player_name().."_potion_inv;potions;3,1;1,1;2]" ..
+			"list[detached:"..player:get_player_name().."_potion_inv;potions;5,1;1,1;4]" ..
+			"list[detached:"..player:get_player_name().."_potion_inv;potions;7,1;1,1;6]" ..
 
-			"list[detached:"..player:get_player_name().."_potion_inv;potions;1,2.5;1,1;4]" ..
-			"list[detached:"..player:get_player_name().."_potion_inv;potions;3,2.5;1,1;5]" ..
-			"list[detached:"..player:get_player_name().."_potion_inv;potions;5,2.5;1,1;6]" ..
+			"list[detached:"..player:get_player_name().."_potion_inv;potions;1,2.5;1,1;1]" ..
+			"list[detached:"..player:get_player_name().."_potion_inv;potions;3,2.5;1,1;3]" ..
+			"list[detached:"..player:get_player_name().."_potion_inv;potions;5,2.5;1,1;5]" ..
 			"list[detached:"..player:get_player_name().."_potion_inv;potions;7,2.5;1,1;7]" ..
 
 			-- buttons
@@ -168,5 +205,5 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 		if fields[tostring(i)] then
 			warp(player, tostring(i))
 		end
-	end	
+	end
 end)
