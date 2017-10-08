@@ -256,5 +256,6 @@ if m_ui then
 			.."label[0,0;Warp Potions]"
 			..get_formspec(name,true)
 			return {formspec=formspec}
+	end
 })
 end
