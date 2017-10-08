@@ -216,6 +216,7 @@ minetest.register_chatcommand("fs", {
 -- when pressing buttons
 
 minetest.register_on_player_receive_fields(function(player, formname, fields)
+	-- support inventory plus
 	if m_ip then
 		if fields.warp_potion then
 			-- show formspec
@@ -229,6 +230,7 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 
 	if formname ~= "warp_potions:potions_form" and
 	formname ~= "" then return end
+
 	for i = 1, 8 do
 		if fields[tostring(i)] then
 			warp(player, tostring(i))
@@ -254,6 +256,5 @@ if m_ui then
 			.."label[0,0;Warp Potions]"
 			..get_formspec(name,true)
 			return {formspec=formspec}
-	end,
 })
 end
