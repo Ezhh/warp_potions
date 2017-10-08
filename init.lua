@@ -96,41 +96,43 @@ end
 
 -- formspec function
 
-local function get_formspec(name)
-	local formspec = 'size[8,9;]'
-	formspec = formspec..
-			-- inventory slots
-			"label[0,0;Potion Inventory:]" ..
+local function get_formspec(name, part)
+	local a, b, c
 
-			"list[detached:"..name.."_potion_inv;potions;1,1;1,1;0]" ..
-			"list[detached:"..name.."_potion_inv;potions;3,1;1,1;2]" ..
-			"list[detached:"..name.."_potion_inv;potions;5,1;1,1;4]" ..
-			"list[detached:"..name.."_potion_inv;potions;7,1;1,1;6]" ..
+	a = 'size[8,9;]'..
+		"label[0,0;Potion Inventory:]"
 
-			"list[detached:"..name.."_potion_inv;potions;1,2.5;1,1;1]" ..
-			"list[detached:"..name.."_potion_inv;potions;3,2.5;1,1;3]" ..
-			"list[detached:"..name.."_potion_inv;potions;5,2.5;1,1;5]" ..
-			"list[detached:"..name.."_potion_inv;potions;7,2.5;1,1;7]" ..
+	b =  "list[detached:"..name.."_potion_inv;potions;1,1;1,1;0]" ..
+		"list[detached:"..name.."_potion_inv;potions;3,1;1,1;2]" ..
+		"list[detached:"..name.."_potion_inv;potions;5,1;1,1;4]" ..
+		"list[detached:"..name.."_potion_inv;potions;7,1;1,1;6]" ..
 
-			-- buttons
-			"button[0.2,1;1,1;1;Use]" ..
-			"button[2.2,1;1,1;3;Use]" ..
-			"button[4.2,1;1,1;5;Use]" ..
-			"button[6.2,1;1,1;7;Use]" ..
+		"list[detached:"..name.."_potion_inv;potions;1,2.5;1,1;1]" ..
+		"list[detached:"..name.."_potion_inv;potions;3,2.5;1,1;3]" ..
+		"list[detached:"..name.."_potion_inv;potions;5,2.5;1,1;5]" ..
+		"list[detached:"..name.."_potion_inv;potions;7,2.5;1,1;7]" ..
 
-			"button[0.2,2.5;1,1;2;Use]" ..
-			"button[2.2,2.5;1,1;4;Use]" ..
-			"button[4.2,2.5;1,1;6;Use]" ..
-			"button[6.2,2.5;1,1;8;Use]" ..
+		-- buttons
+		"button[0.2,1;1,1;1;Use]" ..
+		"button[2.2,1;1,1;3;Use]" ..
+		"button[4.2,1;1,1;5;Use]" ..
+		"button[6.2,1;1,1;7;Use]" ..
 
-			-- background
-			--"background[0,0;8,10;bg_main.png]" ..
-			--"background[0.2,1;1.8,1;bg_slots.png]" ..
+		"button[0.2,2.5;1,1;2;Use]" ..
+		"button[2.2,2.5;1,1;4;Use]" ..
+		"button[4.2,2.5;1,1;6;Use]" ..
+		"button[6.2,2.5;1,1;8;Use]"
 
-			--"button_exit[0,3.5;1,1;exit;Close]")
+		-- background
+		--"background[0,0;8,10;bg_main.png]" ..
+		--"background[0.2,1;1.8,1;bg_slots.png]" ..
 
-			"list[current_player;main;0,5;8,4;]"
-	return formspec
+		--"button_exit[0,3.5;1,1;exit;Close]")
+
+	c = "list[current_player;main;0,5;8,4;]"
+
+	if part then return b end
+	return a..b..c
 end
 
 
@@ -240,11 +242,21 @@ if m_ui then
 	unified_inventory.register_button('potions', {
 		type = 'image',
 		image = 'warp_potion_3.png',
-		tooltip = 'Warp Potion Inventory',
-		action = function(player)
-		local player_name = player:get_player_name()
-		minetest.show_formspec(player_name,
-		"warp_potions:potions_form", get_formspec(player_name))
+		tooltip = 'Warp Potion Inventory'
+		-- action = function(player)
+		-- local player_name = player:get_player_name()
+		-- minetest.show_formspec(player_name,
+		-- "warp_potions:potions_form", get_formspec(player_name))
+	-- end,
+})
+unified_inventory.register_page("potions", {
+	get_formspec = function(player, perplayer_formspec)
+		local name = player:get_player_name()
+		local fy = perplayer_formspec.formspec_y
+		local formspec = "background[0.06,"..fy..";7.92,7.52;potion_inv_ui_form.png]"
+		.."label[0,0;Warp Potions]"
+		..get_formspec(name,true)
+		return {formspec= formspec}
 	end,
 })
 end
