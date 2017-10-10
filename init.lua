@@ -32,6 +32,9 @@ for i in ipairs(potion_list) do
 		groups = {oddly_breakable_by_hand = 3, attached_node = 1},
 		walkable = false,
 		on_rightclick = function(pos, node, player, itemstack, pointed_thing)
+			if minetest.is_protected(pos, player:get_player_name()) then
+				return
+			end
 			player:set_attribute("warp_point_"..number, minetest.pos_to_string(pos))
 			minetest.set_node(pos, {name = "air"})
 			return itemstack
