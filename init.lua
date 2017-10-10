@@ -67,7 +67,16 @@ local function warp(player, warp_point)
 	end
 
 	inv:remove_item("potions", ItemStack("warp_potions:potion_"..warp_point.." 1"))
-	player:set_pos(minetest.string_to_pos(player:get_attribute("warp_point_"..warp_point)))
+	local pos = minetest.string_to_pos(player:get_attribute("warp_point_"..warp_point))
+	player:set_pos(pos)
+
+	-- remove warp point if another player protected destination
+	minetest.after(2, function(pos, player, warp_point) 
+		if minetest.is_protected(pos, player:get_player_name()) then
+			player:set_attribute("warp_point_"..warp_point, "")
+			minetest.chat_send_player(player:get_player_name(), "Area is protected: Warp point lost!")
+		end
+	end, pos, player, warp_point)
 end
 
 
