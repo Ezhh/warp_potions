@@ -115,7 +115,6 @@ local function get_formspec(name, part)
 		"list[detached:"..name.."_potion_inv;potions;5,2.5;1,1;5]" ..
 		"list[detached:"..name.."_potion_inv;potions;7,2.5;1,1;7]" ..
 
-		-- buttons
 		"button[0.2,1;1,1;1;Use]" ..
 		"button[2.2,1;1,1;3;Use]" ..
 		"button[4.2,1;1,1;5;Use]" ..
@@ -125,12 +124,6 @@ local function get_formspec(name, part)
 		"button[2.2,2.5;1,1;4;Use]" ..
 		"button[4.2,2.5;1,1;6;Use]" ..
 		"button[6.2,2.5;1,1;8;Use]"
-
-		-- background
-		--"background[0,0;8,10;bg_main.png]" ..
-		--"background[0.2,1;1.8,1;bg_slots.png]" ..
-
-		--"button_exit[0,3.5;1,1;exit;Close]")
 
 	c = "list[current_player;main;0,5;8,4;]"
 
@@ -241,6 +234,7 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 		end
 	end
 end)
+
 
 -- unified inventory button
 
