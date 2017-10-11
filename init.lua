@@ -210,8 +210,6 @@ end)
 
 minetest.register_chatcommand("fs", {
 	func = function(player_name, param)
-		local player = minetest.get_player_by_name(player_name)
-		local inv = player:get_inventory()
 		minetest.show_formspec(player_name,
 		"warp_potions:potions_form", get_formspec(player_name))
 	end
@@ -225,10 +223,12 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 	if m_ip then
 		if fields.warp_potion then
 			-- show formspec
-			local player_name = player:get_player_name()
-			minetest.show_formspec(player_name,
-			"warp_potions:potions_form",
-			get_formspec(player_name))
+			local formspec = get_formspec(player:get_player_name())
+			formspec = formspec.."button[6,0.1;2,0.5;main;Back]"
+			.. default.gui_bg
+			.. default.gui_bg_img
+			.. default.gui_slots
+			inventory_plus.set_inventory_formspec(player, formspec)
 			return
 		end
 	end
