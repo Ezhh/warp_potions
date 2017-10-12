@@ -3,8 +3,6 @@ Warp Potions
 
 Fair teleport system mod for Minetest survival servers by Shara RedCat.
 
-Note: This mod is a work in progress. Functionality for all listed features is already present, but some planned features are not yet complete.
-
 
 Features
 --------
@@ -14,6 +12,7 @@ This mod adds eight warp potions which can be placed as decorative items. Smashi
 The potion inventory currently supports use with:
 - sfinv
 - unified_inventory
+- inventory_plus
 
 
 Why are these potions fair?
