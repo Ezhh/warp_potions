@@ -209,16 +209,6 @@ minetest.register_on_joinplayer(function(player)
 end)
 
 
--- test command, remove later
-
-minetest.register_chatcommand("fs", {
-	func = function(player_name, param)
-		minetest.show_formspec(player_name,
-		"warp_potions:potions_form", get_formspec(player_name))
-	end
-})
-
-
 -- when pressing buttons
 
 minetest.register_on_player_receive_fields(function(player, formname, fields)
