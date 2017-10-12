@@ -114,7 +114,7 @@ end
 local function get_formspec(name, part)
 	local a, b, c
 
-	a = 'size[8,9;]'..
+	a = 'size[8,8;]'..
 		"label[0,0;Potion Inventory:]"
 
 	b =  "list[detached:"..name.."_potion_inv;potions;1,1;1,1;0]" ..
@@ -137,7 +137,7 @@ local function get_formspec(name, part)
 		"button[4.2,2.5;1,1;6;Use]" ..
 		"button[6.2,2.5;1,1;8;Use]"
 
-	c = "list[current_player;main;0,5;8,4;]"
+	c = "list[current_player;main;0,4;8,4;]"
 
 	if part then return b end
 	return a..b..c
