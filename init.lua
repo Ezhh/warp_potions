@@ -12,9 +12,6 @@ local potion_list = {
 	{"8", "default:obsidian"}
 }
 
-local m_ip = minetest.get_modpath('inventory_plus')
-local m_ui = minetest.get_modpath('unified_inventory')
-
 for i in ipairs(potion_list) do
 	local number = potion_list[i][1]
 	local ingredient = potion_list[i][2]
@@ -50,6 +47,12 @@ for i in ipairs(potion_list) do
 		}
 	})
 end
+
+
+-- check inventory
+
+local m_ip = minetest.get_modpath('inventory_plus')
+local m_ui = minetest.get_modpath('unified_inventory')
 
 
 -- warp function
@@ -199,7 +202,7 @@ minetest.register_on_joinplayer(function(player)
 	else
 		potion_inv:set_list("potions", inv:get_list("potions"))
 	end
-	-- inventory plus?
+	-- inventory plus
 	if m_ip then
 		inventory_plus.register_button(player, "warp_potion", "Warp Potions")
 	end
