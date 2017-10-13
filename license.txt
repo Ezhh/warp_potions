@@ -1,5 +1,9 @@
+Potion button texture:
+CC BY 2.1 JP (https://creativecommons.org/licenses/by/2.1/jp/deed.en)
+Attribution: Tanemori
+With edits by Shara RedCat
 
-Textures:
+All other textures:
 CC BY-SA 4.0 (https://creativecommons.org/licenses/by-sa/4.0/)
 Attribution: Shara RedCat
 

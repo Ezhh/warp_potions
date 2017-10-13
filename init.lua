@@ -243,7 +243,7 @@ end)
 if m_ui then
 	unified_inventory.register_button('potions', {
 		type = 'image',
-		image = 'warp_potion_3.png',
+		image = 'warp_potion_button.png',
 		tooltip = 'Warp Potions'
 
 	})
