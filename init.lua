@@ -53,6 +53,7 @@ end
 
 local m_ip = minetest.get_modpath('inventory_plus')
 local m_ui = minetest.get_modpath('unified_inventory')
+local m_sfinv = minetest.get_modpath('sfinv')
 
 
 -- warp function
@@ -262,13 +263,15 @@ end
 
 -- sfinv
 
-sfinv.register_page("potions", {
-	title = "Potions",
-	get = function(self, player, context)
-		local name = player:get_player_name()
-		return sfinv.make_formspec(player, context,
-			"label[0,0;Warp Potions]" ..
-			get_formspec(name, true),
-			true)
-	end
-})
+if m_sfinv then
+	sfinv.register_page("potions", {
+		title = "Potions",
+		get = function(self, player, context)
+			local name = player:get_player_name()
+			return sfinv.make_formspec(player, context,
+				"label[0,0;Warp Potions]" ..
+				get_formspec(name, true),
+				true)
+		end
+	})
+end
