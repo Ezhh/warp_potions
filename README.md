@@ -9,7 +9,7 @@ Features
 
 This mod adds eight warp potions which can be placed as decorative items. Smashing a warp potion after it has been placed sets a warp point for that player. There are eight warp points, one for each potion, which can be independently set and are unique to each player. Using a warp potion in the potion inventory will return the player to the warp point for that potion. 
 
-The potion inventory currently supports use with:
+The potion inventory auto-sorts potions into the correct slots and cannot contain anything other than a maximum of 99 potions of each type. It currently supports use with:
 - sfinv
 - unified_inventory
 - inventory_plus
