@@ -7,7 +7,7 @@ Fair teleport system mod for Minetest survival servers by Shara RedCat.
 Features
 --------
 
-This mod adds eight warp potions which can be placed as decorative items. Smashing a warp potion after it has been placed sets a warp point for that player. There are eight warp points, one for each potion, which can be independently set and are unique to each player. Using a warp potion in the potion inventory will return the player to the warp point for that potion. 
+This mod adds eight warp potions which can be placed as decorative items. Smashing a warp potion (right click) after it has been placed sets a warp point for that player. There are eight warp points, one for each potion, which can be independently set and are unique to each player. Using a warp potion in the potion inventory will return the player to the warp point for that potion. You can only travel to a warp point if the correct potion type is in the potion inventory.
 
 The potion inventory auto-sorts potions into the correct slots and cannot contain anything other than a maximum of 99 potions of each type. It currently supports use with:
 - sfinv
