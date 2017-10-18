@@ -152,19 +152,7 @@ minetest.register_chatcommand("warp", {
 	description = "Teleport player to chosen warp point.",
 	func = function(player_name, warp_point)
 		local player = minetest.get_player_by_name(player_name)
-		if minetest.string_to_pos(player:get_attribute("warp_point_"..warp_point)) == nil then
-			minetest.chat_send_player(player_name,"Invalid or un-set warp point.")
-			return
-		end
-
-		local inv = player:get_inventory()
-		if not inv:contains_item("main", ItemStack("warp_potions:potion_"..warp_point.." 1")) then
-			minetest.chat_send_player(player_name,"You don't have the right potion!")
-			return
-		end
-
-		inv:remove_item("main", ItemStack("warp_potions:potion_"..warp_point.." 1"))
-		player:set_pos(minetest.string_to_pos(player:get_attribute("warp_point_"..warp_point)))
+		warp(player, warp_point)
 	end
 })
 
