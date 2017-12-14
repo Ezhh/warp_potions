@@ -71,6 +71,8 @@ local function warp(player, warp_point)
 	end
 
 	inv:remove_item("potions", ItemStack("warp_potions:potion_"..warp_point.." 1"))
+	player:get_inventory():set_list("potions", inv:get_list("potions")) -- record state
+	
 	local pos = minetest.string_to_pos(player:get_attribute("warp_point_"..warp_point))
 	player:set_pos(pos)
 
